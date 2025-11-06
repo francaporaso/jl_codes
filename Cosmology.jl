@@ -34,7 +34,6 @@ end
 
 Base.broadcastable(c::AbstractCosmology) = Ref(c)
 
-
 function invE(cosmo::AbstractΛCDM, z::Real)
     return 1.0/sqrt(cosmo.Ω_r0*(1.0+z)^4 + cosmo.Ω_m0*(1.0+z)^3 + cosmo.Ω_k0*(1.0+z)^2 + cosmo.Ω_Λ0)
 end
