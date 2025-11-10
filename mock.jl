@@ -41,8 +41,8 @@ function make_mock_voids(filename::AbstractString; nrows=100, seed=0)
 
 end
 
-Ngals = 1_000_000
-Nvoids = 2_000
+Ngals = 100_000
+Nvoids = 1_000
 
 make_mock_galaxies("mockgals.dat", seed=2, nrows=Ngals)
 make_mock_voids("mockvoids.dat", seed=3, nrows=Nvoids)
@@ -50,11 +50,10 @@ make_mock_voids("mockvoids.dat", seed=3, nrows=Nvoids)
 make_mock_galaxies("random_gals.dat", seed=2, nrows=10*Ngals)
 make_mock_voids("random_voids.dat", seed=3, nrows=10*Nvoids)
 
-
-
+using Plots
 function plot_mocks()
-    
-    randgals = readdlm("mockgalaxies.dat")
+
+    randgals = readdlm("mockgals.dat")
     randgals = DataFrame(randgals[2:end, :], randgals[1,:])
     scatter(randgals.ra, randgals.dec)
     
@@ -63,3 +62,5 @@ function plot_mocks()
     scatter!(randvoids.ra, randvoids.dec, markersize=randvoids.Rv, alpha=0.5)
     
 end
+
+plot_mocks()
