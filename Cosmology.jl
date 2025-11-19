@@ -1,12 +1,10 @@
 module Cosmology
 
 export ΛCDM, FlatΛCDM, Planck18, comoving_distance, angular_diameter_distance, luminosity_distance,
-    angular_diameter_distance_z1z2
+    angular_diameter_distance_z1z2, sphere2box
 
 using QuadGK
-
-include("Constants.jl")
-using .Constants
+using ..Constants
     
 abstract type AbstractCosmology end
 abstract type FLRW <: AbstractCosmology end
@@ -69,6 +67,27 @@ function angular_diameter_distance_z1z2(cosmo::FlatΛCDM, z1::Real, z2::Real)
     D_H = 1e-5*c/cosmo.h
     D_12 = 1.0/(1.0+z2) * (D_2 - D_1)
     return D_12
+end
+
+function sphere2box(cosmo::AbstractCosmology, ra::Real, dec::Real, z::Real)
+    χ = comoving_distance(cosmo, z)
+    x = χ*cosd(ra)*cosd(dec) 
+    y = χ*sind(ra)*cosd(dec) 
+    z = χ*sind(dec) 
+    return x,y,z
+end
+
+function sphere2box(cosmo::AbstractCosmology, ra::Vector, dec::Vector, z::Vector)
+    χ = comoving_distance.(cosmo, z)
+    
+    box = zeros(3, length(ra))
+    cosdec = cosd.(dec)
+
+    @. box[1,:] = χ*cosd(ra)*cosdec
+    @. box[2,:] = χ*sind(ra)*cosdec
+    @. box[3,:] = χ*sind(dec)
+    
+    return box
 end
 
 end #Cosmology

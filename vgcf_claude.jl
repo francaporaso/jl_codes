@@ -1,7 +1,13 @@
 using NearestNeighbors
 using Statistics, LinearAlgebra
 using Random
+using Plots
 
+include("Constants.jl")
+include("Cosmology.jl")
+include("Functools.jl")
+using .Cosmology
+using .Functools
 
 function count_pairs_in_bins(tree, galaxy_pos::Matrix, void_centers::Matrix, void_radii::Vector;
                              RIN::Real=0.1, ROUT::Real=2.0, NBINS::Integer=20)
@@ -70,21 +76,60 @@ function galaxy_void_xcorr_peebles(galaxy_pos::Matrix, void_centers::Matrix,
     return r_norm_centers, xi, DD, RR
 end
 
-Random.seed!(42)
+function test_voidcat_random()
+    Random.seed!(42)
+    Rv_min, Rv_max, z_min, z_max, delta_min, delta_max = 10.0, 15.0, 0.2, 0.22, -1.0, -0.1
+    RIN, ROUT, NBINS = 0.1, 2.0, 20
+    cosmo = Cosmology.Planck18
+    
+    L, _, _ = lenscat_load(
+        "/home/fmcaporaso/cats/L768/voids_LCDM_09.dat",
+        Rv_min, Rv_max,
+        z_min, z_max,
+        delta_min, delta_max;
+        fullshape=false
+        )
 
-# Simulate data
-n_gal = 50000
-n_rand = 50000 * 5  # 5x more randoms for better statistics
-boxsize = 3000.0  # Mpc/h
+    void_centers = sphere2box(cosmo, L[:,2], L[:,3], L[:,4])
+    void_radii = L[:, 1]
+    
+    boxsize = sum(abs.(extrema(void_centers)))
 
-galaxy_pos = rand(3, n_gal) .* boxsize
-random_pos = rand(3, n_rand) .* boxsize
+    n_gals = 10000
+    n_rand = n_gals*10
+    galaxy_pos = rand(3, n_rand) .* boxsize
+    random_pos = rand(3, n_rand) .* boxsize
 
-n_voids = 500
-void_centers = rand(3, n_voids) .* boxsize
-void_radii = rand(n_voids) .* 40 .+ 10  # 10-50 Mpc/h
+    r, xi, _, _ = galaxy_void_xcorr_peebles(
+        galaxy_pos, void_centers, void_radii, random_pos; RIN=RIN, ROUT=ROUT, NBINS=NBINS
+    )
 
-tree_true = KDTree(galaxy_pos)
-tree_rand = KDTree(random_pos)
+    plot(r, xi)
 
-RIN, ROUT, NBINS = 0.1, 2.0, 20
+end
+
+function test_random_random()
+    Random.seed!(42)
+
+    # Simulate data
+    n_gal = 50000
+    n_rand = 50000 * 5  # 5x more randoms for better statistics
+    boxsize = 3000.0  # Mpc/h
+
+    galaxy_pos = rand(3, n_gal) .* boxsize
+    random_pos = rand(3, n_rand) .* boxsize
+
+    n_voids = 500
+    void_centers = rand(3, n_voids) .* boxsize
+    void_radii = rand(n_voids) .* 40 .+ 10  # 10-50 Mpc/h
+
+    RIN, ROUT, NBINS = 0.1, 2.0, 20
+
+    r, xi, _, _ = galaxy_void_xcorr_peebles(
+        galaxy_pos, void_centers, void_radii, random_pos; RIN=RIN, ROUT=ROUT, NBINS=NBINS
+    )
+
+    plot(r, xi)
+end
+
+test()
