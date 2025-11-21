@@ -4,8 +4,7 @@ export lenscat_load, spherical2cartesian
 
 using DelimitedFiles
 using FITSIO
-#using ..Cosmology
-
+using ..Cosmology
 
 function spherical2cartesian(cosmo::AbstractCosmology, ra::Real, dec::Real, χ::Real)
     x = χ*cosd(ra)*cosd(dec) 
