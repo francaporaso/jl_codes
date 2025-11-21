@@ -1,7 +1,7 @@
 module Cosmology
 
 export ΛCDM, FlatΛCDM, Planck18, comoving_distance, angular_diameter_distance, luminosity_distance,
-    angular_diameter_distance_z1z2, sphere2box
+    angular_diameter_distance_z1z2, sphere2box, spherical2cartesian
 
 using QuadGK
 using ..Constants

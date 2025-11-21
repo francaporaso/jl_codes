@@ -1,11 +1,10 @@
 module Functools
 
-export lenscat_load, spherical2cartesian
+export lenscat_load, sourcecat_load
 
 using DelimitedFiles
-using FITSIO
+using Arrow, DataFrames
 #using ..Cosmology
-
 
 """
 constructs the jackknife patches masks using Lambert cylindrical equal-area projection
@@ -85,10 +84,11 @@ function lenscat_load(name::String,
 
 end
 
-function sourcecat_load(name::String)
-    f = FITS(name)
-    cat = readdlm(f[1]; use_mmap=true)
-    return cat
+function sourcecat_load(name::String="l768_gr_z005-070_forcorrfunc.arrow")
+    S = DataFrame(Arrow.Table("../cats/L768/"*name))
+    #mask
+
+    return S
 end
 
 end #module
