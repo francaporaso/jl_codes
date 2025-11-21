@@ -31,7 +31,7 @@ function count_pairs_in_bins(tree, galaxy_pos::Matrix, void_centers::Matrix, voi
         end
     end
     
-    return counts
+    return count
 end
 
 function galaxy_void_xcorr_peebles(galaxy_pos::Matrix, void_centers::Matrix, 
@@ -88,7 +88,7 @@ function test_voidcat_random()
         z_min, z_max,
         delta_min, delta_max;
         fullshape=false
-        )
+    )
 
     void_centers = sphere2box(cosmo, L[:,2], L[:,3], L[:,4])
     void_radii = L[:, 1]

@@ -82,7 +82,7 @@ function sphere2box(cosmo::AbstractCosmology, ra::Vector, dec::Vector, z::Vector
     
     box = zeros(3, length(ra))
     cosdec = cosd.(dec)
-
+    
     @. box[1,:] = χ*cosd(ra)*cosdec
     @. box[2,:] = χ*sind(ra)*cosdec
     @. box[3,:] = χ*sind(dec)

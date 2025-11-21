@@ -1,10 +1,28 @@
 module Functools
 
-export lenscat_load
+export lenscat_load, spherical2cartesian
 
 using DelimitedFiles
 using FITSIO
 #using ..Cosmology
+
+
+function spherical2cartesian(cosmo::AbstractCosmology, ra::Real, dec::Real, χ::Real)
+    x = χ*cosd(ra)*cosd(dec) 
+    y = χ*sind(ra)*cosd(dec) 
+    z = χ*sind(dec) 
+    return x,y,z
+end
+
+function spherical2cartesian(cosmo::AbstractCosmology, ra::Vector{Real}, dec::Vector{Real}, χ::Vector{Real})
+    box = zeros(3, length(ra))
+    cosdec = cosd.(dec)
+    
+    @. box[1,:] = χ*cosd(ra)*cosdec
+    @. box[2,:] = χ*sind(ra)*cosdec
+    @. box[3,:] = χ*sind(dec)
+    return box
+end
 
 """
 constructs the jackknife patches masks using Lambert cylindrical equal-area projection
