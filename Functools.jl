@@ -14,7 +14,7 @@ function spherical2cartesian(cosmo::AbstractCosmology, ra::Real, dec::Real, χ::
     return x,y,z
 end
 
-function spherical2cartesian(cosmo::AbstractCosmology, ra::Vector{Real}, dec::Vector{Real}, χ::Vector{Real})
+function spherical2cartesian(cosmo::AbstractCosmology, ra::AbstractVector, dec::AbstractVector, χ::AbstractVector)
     box = zeros(3, length(ra))
     cosdec = cosd.(dec)
     
